@@ -1,0 +1,53 @@
+#+TITLE: mouse_joystick_interface_python
+#+AUTHOR: Peter Polidoro
+#+EMAIL: peterpolidoro@gmail.com
+
+* Package Information
+  - Author :: Peter Polidoro
+  - License :: BSD
+
+  This Python package (mouse_joystick_interface) creates a class named
+  MouseJoystickInterface.
+
+* Example Usage
+
+
+  #+BEGIN_SRC python
+    from mouse_joystick_interface import MouseJoystickInterface
+    dev = MouseJoystickInterface() # Might automatically find device if one available
+    # if it is not found automatically, specify port directly
+    dev = MouseJoystickInterface(port='/dev/ttyACM0') # Linux specific port
+    dev = MouseJoystickInterface(port='/dev/tty.usbmodem262471') # Mac OS X specific port
+    dev = MouseJoystickInterface(port='COM3') # Windows specific port
+  #+END_SRC
+
+* More Detailed Modular Device Information
+
+  [[https://github.com/janelia-modular-devices/modular-devices]]
+
+* Installation
+
+  [[https://github.com/janelia-pypi/python_setup][Setup Python]]
+
+** Install Arduino and Teensyduino on your Host Machine
+
+   [[https://github.com/janelia-arduino/arduino_setup][Setup Arduino]]
+
+** Linux and Mac OS X
+
+   #+BEGIN_SRC sh
+     mkdir -p ~/virtualenvs/mouse_joystick_interface
+     virtualenv ~/virtualenvs/mouse_joystick_interface
+     #Python3
+     virtualenv -p python3 ~/virtualenvs/mouse_joystick_interface
+     source ~/virtualenvs/mouse_joystick_interface/bin/activate
+     pip install mouse_joystick_interface
+   #+END_SRC
+
+** Windows
+
+   #+BEGIN_SRC sh
+     virtualenv C:\virtualenvs\mouse_joystick_interface
+     C:\virtualenvs\mouse_joystick_interface\Scripts\activate
+     pip install mouse_joystick_interface
+   #+END_SRC
