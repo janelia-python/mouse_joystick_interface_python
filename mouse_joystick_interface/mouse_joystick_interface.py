@@ -4,6 +4,7 @@ import atexit
 import os
 from datetime import datetime
 from threading import Timer
+import csv
 
 from modular_client import ModularClients
 
@@ -30,15 +31,15 @@ class MouseJoystickInterface():
 
     Example Usage:
 
-    dev = MouseJoystickInterface() # Might automatically find device if one available
-    # if it is not found automatically, specify port directly
-    dev = MouseJoystickInterface(port='/dev/ttyACM0') # Linux specific port
-    dev = MouseJoystickInterface(port='/dev/tty.usbmodem262471') # Mac OS X specific port
-    dev = MouseJoystickInterface(port='COM3') # Windows specific port
+    dev = MouseJoystickInterface() # Might automatically find devices if available
+    # if devices not found automatically, specify ports directly
+    dev = MouseJoystickInterface(use_ports=['/dev/ttyACM0','/dev/ttyACM0']) # Linux specific ports
+    dev = MouseJoystickInterface(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X specific ports
+    dev = MouseJoystickInterface(use_ports=['COM3','COM4']) # Windows specific ports
 
     '''
 
-    _CHECK_FOR_DATA_PERIOD = 4.0
+    _CHECK_FOR_UNREAD_DATA_PERIOD = 4.0
 
     def __init__(self,*args,**kwargs):
         if 'debug' in kwargs:
@@ -46,13 +47,26 @@ class MouseJoystickInterface():
         else:
             kwargs.update({'debug': DEBUG})
             self.debug = DEBUG
-            self._save_path = os.path.expanduser('~/mouse_joystick')
-        if not os.path.exists(self._save_path):
-            os.makedirs(self._save_path)
+            self._base_path = os.path.expanduser('~/mouse_joystick')
         t_start = time.time()
-        self._check_for_data_timer = PerpetualTimer(self._CHECK_FOR_DATA_PERIOD,self._check_for_data)
         atexit.register(self._exit_mouse_joystick_interface)
         self._modular_clients = ModularClients(*args,**kwargs)
+        self._assay_running = False
+        self._trials_fieldnames = ['trial_index',
+                                   'trial',
+                                   'block',
+                                   'set',
+                                   'reach_position_0',
+                                   'reach_position_1',
+                                   'pull_torque',
+                                   'pull_threshold',
+                                   'trial_start',
+                                   'mouse_ready',
+                                   'joystick_ready',
+                                   'reward']
+        self._trial_fieldnames = ['date_time',
+                                  'milliseconds',
+                                  'joystick_position']
         mjc_name = 'mouse_joystick_controller'
         mjc_form_factor = '5x3'
         mjc_serial_number = 0
@@ -69,78 +83,95 @@ class MouseJoystickInterface():
         self._debug_print('Initialization time =', (t_end - t_start))
 
     def start_assay(self):
+        if self._assay_running:
+            return
+
         status = self.mouse_joystick_controller.get_assay_status()
         if (status['state'] != 'ASSAY_FINISHED') and (status['state'] != 'ASSAY_NOT_STARTED'):
             self.abort_assay()
             while True:
-                time.sleep(self._CHECK_FOR_DATA_PERIOD)
+                time.sleep(self._CHECK_FOR_UNREAD_DATA_PERIOD)
                 status = self.mouse_joystick_controller.get_assay_status()
                 if (status['state'] == 'ASSAY_FINISHED'):
                     break
 
         self.mouse_joystick_controller.set_time(time.time())
         self.encoder_interface.set_time(time.time())
+
+        self._assay_path = os.path.join(self._base_path,self._get_date_time_str())
+        os.makedirs(self._assay_path)
+        trials_filename = 'trials.csv'
+        trials_path = os.path.join(self._assay_path,trials_filename)
+        self._trials_file = open(trials_path,'w')
+        self._trials_writer = csv.DictWriter(self._trials_file,fieldnames=self._trials_fieldnames)
+        self._trials_writer.writeheader()
         self.mouse_joystick_controller.start_assay()
-        self._check_for_data_timer.start()
+        self._assay_running = True
+        self._check_for_unread_data_timer = Timer(self._CHECK_FOR_UNREAD_DATA_PERIOD,self._check_for_unread_data)
+        self._check_for_unread_data_timer.start()
 
     def abort_assay(self):
-        self._check_for_data_timer.cancel()
-        self.mouse_joystick_controller.abort_assay()
+        self._assay_running = False
+        try:
+            self._trials_file.close()
+        except (AttributeError,ValueError):
+            pass
+        try:
+            self._check_for_unread_data_timer.cancel()
+        except AttributeError:
+            pass
+        try:
+            self.mouse_joystick_controller.abort_assay()
+        except:
+            pass
 
     def _debug_print(self, *args):
         if self.debug:
             print(*args)
 
     def _exit_mouse_joystick_interface(self):
-        self._check_for_data_timer.cancel()
-        self.mouse_joystick_controller.abort_assay()
+        self.abort_assay()
 
-    def _get_date_str(self):
-        d = datetime.fromtimestamp(time.time())
-        date_str = d.strftime("%Y%m%d")
-        return date_str
-
-    def _get_date_time_str(self):
-        d = datetime.fromtimestamp(time.time())
-        date_time_str = d.strftime("%Y%m%d_%H%M%S")
+    def _get_date_time_str(self,timestamp=None):
+        if timestamp is None:
+            d = datetime.fromtimestamp(time.time())
+        else:
+            d = datetime.fromtimestamp(timestamp)
+        date_time_str = d.strftime('%Y-%m-%d-%H-%M-%S')
         return date_time_str
 
-    def _check_for_data(self):
+    def _get_time_from_date_time_str(self,date_time_str):
+        timestamp = time.mktime(datetime.strptime(date_time_str,'%Y-%m-%d-%H-%M-%S').timetuple())
+        return timestamp
+
+    def _check_for_unread_data(self):
+        if not self._assay_running:
+            return
         status = self.mouse_joystick_controller.get_assay_status()
-        unread_trial_data = status.pop('unread_trial_data')
+        unread_trial_timing_data = status.pop('unread_trial_timing_data')
         state = status.pop('state')
-        if unread_trial_data:
-            print(status)
+        if unread_trial_timing_data:
             encoder_samples = self.encoder_interface.get_samples()
-            print(len(encoder_samples))
-            trial_data = self.mouse_joystick_controller.read_trial_data()
+            trial_filename = 'trial_{0}.csv'.format(status['trial_index'])
+            trial_path = os.path.join(self._assay_path,trial_filename)
+            with open(trial_path,'w') as trial_file:
+                self._trial_writer = csv.DictWriter(self._trial_file,fieldnames=self._trial_fieldnames)
+                self._trial_writer.writeheader()
+            for sample in encoder_samples:
+                sample[0] = self._get_date_time_str(sample[0])
+            trial_timing_data = self.mouse_joystick_controller.get_trial_timing_data()
+            trial_timing_data_date_time = {key: self._get_date_time_str(value) for (key,value) in trial_timing_data.items()}
+            trial_data = {**status,**trial_timing_data_date_time}
             print(trial_data)
+            self._trials_writer.writerow(trial_data)
             self.mouse_joystick_controller.set_time(time.time())
             self.encoder_interface.set_time(time.time())
         if state == 'ASSAY_FINISHED':
-            self._check_for_data_timer.cancel()
+            self._assay_running = False
+        else:
+            self._check_for_unread_data_timer = Timer(self._CHECK_FOR_UNREAD_DATA_PERIOD,self._check_for_unread_data)
+            self._check_for_unread_data_timer.start()
 
-class PerpetualTimer():
-
-   def __init__(self,t,h_function):
-       self.t = t
-       self.h_function = h_function
-       self.thread = Timer(self.t,self.handle_function)
-       self.enabled = False
-
-   def handle_function(self):
-       if self.enabled:
-           self.h_function()
-           self.thread = Timer(self.t,self.handle_function)
-           self.thread.start()
-
-   def start(self):
-       self.enabled = True
-       self.thread.start()
-
-   def cancel(self):
-       self.enabled = False
-       self.thread.cancel()
 
 # -----------------------------------------------------------------------------------------
 if __name__ == '__main__':

@@ -13,9 +13,8 @@ License::
 
 Example Usage::
 
-    from mouse_joystick_interface import MouseJoystickInterface
-    dev = MouseJoystickInterface() # Might automatically find device if one available
-    # if it is not found automatically, specify port directly
-    dev = MouseJoystickInterface(port='/dev/ttyACM0') # Linux specific port
-    dev = MouseJoystickInterface(port='/dev/tty.usbmodem262471') # Mac OS X specific port
-    dev = MouseJoystickInterface(port='COM3') # Windows specific port
+    dev = MouseJoystickInterface() # Might automatically find devices if available
+    # if devices not found automatically, specify ports directly
+    dev = MouseJoystickInterface(use_ports=['/dev/ttyACM0','/dev/ttyACM0']) # Linux specific ports
+    dev = MouseJoystickInterface(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X specific ports
+    dev = MouseJoystickInterface(use_ports=['COM3','COM4']) # Windows specific ports
