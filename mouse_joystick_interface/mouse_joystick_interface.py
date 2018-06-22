@@ -53,6 +53,7 @@ class MouseJoystickInterface():
         self._modular_clients = ModularClients(*args,**kwargs)
         self._assay_running = False
         self._trials_fieldnames = ['trial_index',
+                                   'successful_trial_count',
                                    'trial',
                                    'block',
                                    'set',
@@ -63,7 +64,10 @@ class MouseJoystickInterface():
                                    'trial_start',
                                    'mouse_ready',
                                    'joystick_ready',
-                                   'reward']
+                                   'pull',
+                                   'push',
+                                   'timeout',
+                                   'trial_abort']
         self._trial_fieldnames = ['date_time',
                                   'milliseconds',
                                   'joystick_position']
@@ -135,13 +139,19 @@ class MouseJoystickInterface():
     def _get_date_time_str(self,timestamp=None):
         if timestamp is None:
             d = datetime.fromtimestamp(time.time())
+        elif timestamp == 0:
+            date_time_str = 'NULL'
+            return date_time_str
         else:
             d = datetime.fromtimestamp(timestamp)
         date_time_str = d.strftime('%Y-%m-%d-%H-%M-%S')
         return date_time_str
 
     def _get_time_from_date_time_str(self,date_time_str):
-        timestamp = time.mktime(datetime.strptime(date_time_str,'%Y-%m-%d-%H-%M-%S').timetuple())
+        if date_time_str != 'NULL':
+            timestamp = time.mktime(datetime.strptime(date_time_str,'%Y-%m-%d-%H-%M-%S').timetuple())
+        else:
+            timestamp = 0
         return timestamp
 
     def _check_for_unread_data(self):
