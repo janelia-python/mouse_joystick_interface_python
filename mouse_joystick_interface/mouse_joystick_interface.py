@@ -155,10 +155,11 @@ class MouseJoystickInterface():
             trial_filename = 'trial_{0}.csv'.format(status['trial_index'])
             trial_path = os.path.join(self._assay_path,trial_filename)
             with open(trial_path,'w') as trial_file:
-                self._trial_writer = csv.DictWriter(self._trial_file,fieldnames=self._trial_fieldnames)
-                self._trial_writer.writeheader()
-            for sample in encoder_samples:
-                sample[0] = self._get_date_time_str(sample[0])
+                self._trial_writer = csv.writer(trial_file,quotechar='\"',quoting=csv.QUOTE_MINIMAL)
+                self._trial_writer.writerow(self._trial_fieldnames)
+                for sample in encoder_samples:
+                    sample[0] = self._get_date_time_str(sample[0])
+                    self._trial_writer.writerow(sample)
             trial_timing_data = self.mouse_joystick_controller.get_trial_timing_data()
             trial_timing_data_date_time = {key: self._get_date_time_str(value) for (key,value) in trial_timing_data.items()}
             trial_data = {**status,**trial_timing_data_date_time}
