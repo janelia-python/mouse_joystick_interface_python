@@ -36,7 +36,7 @@ class MouseJoystickInterface():
     dev = MouseJoystickInterface(use_ports=['/dev/ttyACM0','/dev/ttyACM0']) # Linux specific ports
     dev = MouseJoystickInterface(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X specific ports
     dev = MouseJoystickInterface(use_ports=['COM3','COM4']) # Windows specific ports
-
+    dev.start_assay()
     '''
 
     _CHECK_FOR_UNREAD_DATA_PERIOD = 4.0
