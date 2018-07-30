@@ -68,6 +68,7 @@ class MouseJoystickInterface():
     '''
 
     _CHECK_FOR_UNREAD_DATA_PERIOD = 4.0
+    _RESET_DURATION = 3.0
 
     def __init__(self,*args,**kwargs):
         if 'debug' in kwargs:
@@ -75,10 +76,11 @@ class MouseJoystickInterface():
         else:
             kwargs.update({'debug': DEBUG})
             self.debug = DEBUG
-            self._base_path = os.path.expanduser('~/mouse_joystick')
+        self._base_path = os.path.expanduser('~/mouse_joystick')
+        self._args = args
+        self._kwargs = kwargs
         t_start = time.time()
         atexit.register(self._exit_mouse_joystick_interface)
-        self._modular_clients = ModularClients(*args,**kwargs)
         self._assay_running = False
         self._trials_fieldnames = ['trial_index',
                                    'successful_trial_count',
@@ -99,6 +101,12 @@ class MouseJoystickInterface():
         self._trial_fieldnames = ['date_time',
                                   'milliseconds',
                                   'joystick_position']
+        self._setup_modular_clients()
+        t_end = time.time()
+        self._debug_print('Initialization time =', (t_end - t_start))
+
+    def _setup_modular_clients(self):
+        self._modular_clients = ModularClients(*self._args,**self._kwargs)
         mjc_name = 'mouse_joystick_controller'
         mjc_form_factor = '5x3'
         mjc_serial_number = 0
@@ -111,25 +119,25 @@ class MouseJoystickInterface():
         if (ei_name not in self._modular_clients):
             raise RuntimeError(ei_name + ' is not connected!')
         self.encoder_interface = self._modular_clients[ei_name][ei_form_factor][ei_serial_number]
-        t_end = time.time()
-        self._debug_print('Initialization time =', (t_end - t_start))
 
     def start_assay(self):
         if self._assay_running:
+            print('Assay already running.')
             return
 
-        status = self.mouse_joystick_controller.get_assay_status()
-        if (status['state'] != 'ASSAY_FINISHED') and (status['state'] != 'ASSAY_NOT_STARTED'):
-            self.abort_assay()
-            while True:
-                time.sleep(self._CHECK_FOR_UNREAD_DATA_PERIOD)
-                status = self.mouse_joystick_controller.get_assay_status()
-                if (status['state'] == 'ASSAY_FINISHED'):
-                    break
+        print('Starting assay...')
 
+        print('Resetting devices...')
+        self.mouse_joystick_controller.reset_all()
+        time.sleep(self._RESET_DURATION)
+        self._setup_modular_clients()
+        print('Devices reset.')
+
+        print('Setting time.')
         self.mouse_joystick_controller.set_time(time.time())
         self.encoder_interface.set_time(time.time())
 
+        print('Setting up data files.')
         self._assay_path = os.path.join(self._base_path,self._get_date_time_str())
         os.makedirs(self._assay_path)
         trials_filename = 'trials.csv'
@@ -141,6 +149,7 @@ class MouseJoystickInterface():
         self._assay_running = True
         self._check_for_unread_data_timer = Timer(self._CHECK_FOR_UNREAD_DATA_PERIOD,self._check_for_unread_data)
         self._check_for_unread_data_timer.start()
+        print('Assay running!')
 
     def abort_assay(self):
         self._assay_running = False
@@ -201,6 +210,7 @@ class MouseJoystickInterface():
             trial_timing_data = self.mouse_joystick_controller.get_trial_timing_data()
             trial_timing_data_date_time = {key: self._get_date_time_str(value) for (key,value) in trial_timing_data.items()}
             trial_data = {**status,**trial_timing_data_date_time}
+            print('Trial data:')
             print(trial_data)
             self._trials_writer.writerow(trial_data)
             self.mouse_joystick_controller.set_time(time.time())
