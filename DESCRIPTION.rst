@@ -5,7 +5,7 @@ This Python package creates a class named MouseJoystickInterface.
 
 Authors::
 
-    Peter Polidoro <polidorop@janelia.hhmi.org>
+    Peter Polidoro <peterpolidoro@gmail.com>
 
 License::
 
