@@ -3,8 +3,12 @@
 #+EMAIL: peterpolidoro@gmail.com
 
 * Package Information
-  - Author :: Peter Polidoro
+  - Name :: mouse_joystick_interface_python
+  - Version :: 1.1.0
   - License :: BSD
+  - URL :: https://github.com/janelia-pypi/mouse_joystick_interface_python
+  - Author :: Peter Polidoro
+  - Email :: peterpolidoro@gmail.com
 
   This Python package (mouse_joystick_interface) creates a class named
   MouseJoystickInterface.
