@@ -60,11 +60,11 @@
 
 * Installation
 
-  [[https://github.com/janelia-pypi/python_setup][Setup Python]]
+  [[https://github.com/janelia-pypi/python_setup]]
 
 ** Install Arduino and Teensyduino on your Host Machine
 
-   [[https://github.com/janelia-arduino/arduino_setup][Setup Arduino]]
+   [[https://github.com/janelia-arduino/arduino_setup]]
 
 ** Linux and Mac OS X
 
