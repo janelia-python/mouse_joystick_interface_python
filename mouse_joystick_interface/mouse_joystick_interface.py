@@ -134,8 +134,8 @@ class MouseJoystickInterface():
         print('Devices reset.')
 
         print('Setting time.')
-        self.mouse_joystick_controller.set_time(time.time())
-        self.encoder_interface.set_time(time.time())
+        self.mouse_joystick_controller.set_time(int(time.time()))
+        self.encoder_interface.set_time(int(time.time()))
 
         print('Setting up data files.')
         self._assay_path = os.path.join(self._base_path,self._get_date_time_str())
@@ -213,8 +213,8 @@ class MouseJoystickInterface():
             print('Trial data:')
             print(trial_data)
             self._trials_writer.writerow(trial_data)
-            self.mouse_joystick_controller.set_time(time.time())
-            self.encoder_interface.set_time(time.time())
+            self.mouse_joystick_controller.set_time(int(time.time()))
+            self.encoder_interface.set_time(int(time.time()))
         if state == 'ASSAY_FINISHED':
             self._assay_running = False
         else:

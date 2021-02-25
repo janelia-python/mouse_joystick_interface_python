@@ -1,0 +1,20 @@
+Dockerfile
+.dockerignore
+
+.git
+.gitignore
+
+build
+dist
+*.egg-info
+*.egg/
+*.pyc
+*.swp
+
+.tox
+.coverage
+html/*
+__pycache__
+
+# Compiled Documentation
+docs/_build
