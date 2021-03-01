@@ -68,7 +68,6 @@ class MouseJoystickInterface():
     '''
 
     _CHECK_FOR_UNREAD_DATA_PERIOD = 4.0
-    _RESET_DURATION = 3.0
 
     def __init__(self,*args,**kwargs):
         if 'debug' in kwargs:
@@ -126,12 +125,6 @@ class MouseJoystickInterface():
             return
 
         print('Starting assay...')
-
-        print('Resetting devices...')
-        self.mouse_joystick_controller.reset_all()
-        time.sleep(self._RESET_DURATION)
-        self._setup_modular_clients()
-        print('Devices reset.')
 
         print('Setting time.')
         self.mouse_joystick_controller.set_time(int(time.time()))
