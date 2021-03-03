@@ -39,11 +39,3 @@ Example Usage::
     dev.mouse_joystick_controller.activate_lickport(count)
     dev.mouse_joystick_controller.get_trial_timing_data()
     dev.mouse_joystick_controller.abort_trial()
-
-    # optional encoder_interface methods
-    dev.encoder_interface.set_properties_to_defaults(['ALL'])
-    dev.encoder_interface.get_property_values(['ALL'])
-    dev.encoder_interface.sample_period('setValue',15)
-    dev.encoder_interface.get_positions()
-    dev.encoder_interface.get_sample_count()
-    dev.encoder_interface.get_samples()

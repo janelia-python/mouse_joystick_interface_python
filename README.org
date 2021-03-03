@@ -4,7 +4,7 @@
 
 * Package Information
   - Name :: mouse_joystick_interface_python
-  - Version :: 2.0.1
+  - Version :: 3.0.0
   - License :: BSD
   - URL :: https://github.com/janelia-pypi/mouse_joystick_interface_python
   - Author :: Peter Polidoro
@@ -44,14 +44,6 @@
     dev.mouse_joystick_controller.activate_lickport(count)
     dev.mouse_joystick_controller.get_trial_timing_data()
     dev.mouse_joystick_controller.abort_trial()
-
-    # optional encoder_interface methods
-    dev.encoder_interface.set_properties_to_defaults(['ALL'])
-    dev.encoder_interface.get_property_values(['ALL'])
-    dev.encoder_interface.sample_period('setValue',15)
-    dev.encoder_interface.get_positions()
-    dev.encoder_interface.get_sample_count()
-    dev.encoder_interface.get_samples()
   #+END_SRC
 
 * More Detailed Modular Device Information
@@ -101,7 +93,7 @@
 
    #+BEGIN_SRC sh
 
-     docker run -it --device=/dev/ttyACM0 --device=/dev/ttyACM1 python_package_development:latest
+     docker run -it --device=/dev/ttyACM0 python_package_development:latest
 
    #+END_SRC
 

@@ -57,14 +57,6 @@ class MouseJoystickInterface():
     dev.mouse_joystick_controller.activate_lickport(count)
     dev.mouse_joystick_controller.get_trial_timing_data()
     dev.mouse_joystick_controller.abort_trial()
-
-    # optional encoder_interface methods
-    dev.encoder_interface.set_properties_to_defaults(['ALL'])
-    dev.encoder_interface.get_property_values(['ALL'])
-    dev.encoder_interface.sample_period('setValue',15)
-    dev.encoder_interface.get_positions()
-    dev.encoder_interface.get_sample_count()
-    dev.encoder_interface.get_samples()
     '''
 
     _CHECK_FOR_UNREAD_DATA_PERIOD = 4.0
@@ -112,12 +104,6 @@ class MouseJoystickInterface():
         if (mjc_name not in self._modular_clients):
             raise RuntimeError(mjc_name + ' is not connected!')
         self.mouse_joystick_controller = self._modular_clients[mjc_name][mjc_form_factor][mjc_serial_number]
-        ei_name = 'encoder_interface_simple'
-        ei_form_factor = '3x2'
-        ei_serial_number = 0
-        if (ei_name not in self._modular_clients):
-            raise RuntimeError(ei_name + ' is not connected!')
-        self.encoder_interface = self._modular_clients[ei_name][ei_form_factor][ei_serial_number]
 
     def start_assay(self):
         if self._assay_running:
@@ -128,7 +114,6 @@ class MouseJoystickInterface():
 
         print('Setting time.')
         self.mouse_joystick_controller.set_time(int(time.time()))
-        self.encoder_interface.set_time(int(time.time()))
 
         print('Setting up data files.')
         self._assay_path = os.path.join(self._base_path,self._get_date_time_str())
@@ -191,15 +176,11 @@ class MouseJoystickInterface():
         unread_trial_timing_data = status.pop('unread_trial_timing_data')
         state = status.pop('state')
         if unread_trial_timing_data:
-            encoder_samples = self.encoder_interface.get_samples()
             trial_filename = 'trial_{0}.csv'.format(status['trial_index'])
             trial_path = os.path.join(self._assay_path,trial_filename)
             with open(trial_path,'w') as trial_file:
                 self._trial_writer = csv.writer(trial_file,quotechar='\"',quoting=csv.QUOTE_MINIMAL)
                 self._trial_writer.writerow(self._trial_fieldnames)
-                for sample in encoder_samples:
-                    sample[0] = self._get_date_time_str(sample[0])
-                    self._trial_writer.writerow(sample)
             trial_timing_data = self.mouse_joystick_controller.get_trial_timing_data()
             trial_timing_data_date_time = {key: self._get_date_time_str(value) for (key,value) in trial_timing_data.items()}
             trial_data = {**status,**trial_timing_data_date_time}
@@ -207,7 +188,6 @@ class MouseJoystickInterface():
             print(trial_data)
             self._trials_writer.writerow(trial_data)
             self.mouse_joystick_controller.set_time(int(time.time()))
-            self.encoder_interface.set_time(int(time.time()))
         if state == 'ASSAY_FINISHED':
             self._assay_running = False
         else:
