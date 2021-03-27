@@ -223,8 +223,6 @@ class MouseJoystickInterface():
         status = self.mouse_joystick_controller.get_assay_status()
         state = status.pop('state')
         unread_trial_timing_data = status.pop('unread_trial_timing_data')
-        #
-        unread_trial_timing_data = True
         if unread_trial_timing_data:
             trial_timing_data = self.mouse_joystick_controller.get_trial_timing_data()
             trial_timing_data_date_time = {key: self._get_date_time_str(value) for (key,value) in trial_timing_data.items()}
