@@ -2,9 +2,12 @@ from __future__ import print_function, division
 import time
 import atexit
 import os
+import pathlib
 from datetime import datetime
 from threading import Timer
 import csv
+import json
+import flatten_json
 
 from modular_client import ModularClients
 
@@ -39,27 +42,24 @@ class MouseJoystickInterface():
     # abort_assay prematurely stops a running assay and leaves the rig ready to start a new assay
     dev.abort_assay()
     # start_assay is the main method that starts the assay, collects assay data, and saves data files
-    dev.start_assay()
+    dev.start_assay(set_path='~/set_example.csv')
 
     # optional mouse_joystick_controller methods
     dev.mouse_joystick_controller.set_properties_to_defaults(['ALL'])
     dev.mouse_joystick_controller.get_property_values(['ALL'])
-    dev.mouse_joystick_controller.reach_position1_means('getValue')
-    dev.mouse_joystick_controller.reach_position1_means('setValue',[100,160,200])
-    dev.mouse_joystick_controller.reach_position1_means('setArrayLength',2)
-    dev.mouse_joystick_controller.reach_position1_means('setValue',[100,200])
-    dev.mouse_joystick_controller.trial_count('setValue',3)
     dev.mouse_joystick_controller.repeat_aborted_trial('setValue',False)
     dev.mouse_joystick_controller.get_assay_status()
     dev.mouse_joystick_controller.move_joystick_to_base_position()
     dev.mouse_joystick_controller.move_joystick_to_reach_position()
+    duration = 10
     count = 1
-    dev.mouse_joystick_controller.activate_lickport(count)
+    dev.mouse_joystick_controller.activate_lickport(duration,count)
     dev.mouse_joystick_controller.get_trial_timing_data()
     dev.mouse_joystick_controller.abort_trial()
     '''
 
     _CHECK_FOR_UNREAD_DATA_PERIOD = 4.0
+    _SEPARATOR = '.'
 
     def __init__(self,*args,**kwargs):
         if 'debug' in kwargs:
@@ -67,21 +67,27 @@ class MouseJoystickInterface():
         else:
             kwargs.update({'debug': DEBUG})
             self.debug = DEBUG
-        self._base_path = os.path.expanduser('~/mouse_joystick')
+        self._base_path = pathlib.Path('~/mouse_joystick').expanduser()
         self._args = args
         self._kwargs = kwargs
         t_start = time.time()
         atexit.register(self._exit_mouse_joystick_interface)
         self._assay_running = False
-        self._trials_fieldnames = ['trial_index',
+        self._trials_fieldnames = ['finished_trial_count',
                                    'successful_trial_count',
-                                   'trial',
-                                   'block',
-                                   'set',
-                                   'reach_position_0',
-                                   'reach_position_1',
-                                   'pull_torque',
+                                   'trial_aborted',
+                                   'assay_aborted',
                                    'pull_threshold',
+                                   'set_in_assay',
+                                   'repeat_set_count',
+                                   'block_in_set',
+                                   'block_count',
+                                   'trial_in_block',
+                                   'block.repeat_trial_count',
+                                   'block.pull_torque',
+                                   'block.lickport_reward_duration',
+                                   'block.reach_position.0',
+                                   'block.reach_position.1',
                                    'trial_start',
                                    'mouse_ready',
                                    'joystick_ready',
@@ -89,9 +95,11 @@ class MouseJoystickInterface():
                                    'push',
                                    'timeout',
                                    'trial_abort']
-        self._trial_fieldnames = ['date_time',
-                                  'milliseconds',
-                                  'joystick_position']
+        self._block_fieldnames = ['repeat_trial_count',
+                                  'pull_torque',
+                                  'lickport_reward_duration',
+                                  'reach_position.0',
+                                  'reach_position.1']
         self._setup_modular_clients()
         t_end = time.time()
         self._debug_print('Initialization time =', (t_end - t_start))
@@ -99,13 +107,14 @@ class MouseJoystickInterface():
     def _setup_modular_clients(self):
         self._modular_clients = ModularClients(*self._args,**self._kwargs)
         mjc_name = 'mouse_joystick_controller'
+        
         mjc_form_factor = '5x3'
         mjc_serial_number = 0
         if (mjc_name not in self._modular_clients):
             raise RuntimeError(mjc_name + ' is not connected!')
         self.mouse_joystick_controller = self._modular_clients[mjc_name][mjc_form_factor][mjc_serial_number]
 
-    def start_assay(self):
+    def start_assay(self,set_path):
         if self._assay_running:
             print('Assay already running.')
             return
@@ -115,19 +124,58 @@ class MouseJoystickInterface():
         print('Setting time.')
         self.mouse_joystick_controller.set_time(int(time.time()))
 
-        print('Setting up data files.')
-        self._assay_path = os.path.join(self._base_path,self._get_date_time_str())
-        os.makedirs(self._assay_path)
+        print('Importing set csv file.')
+        self._set_path = pathlib.Path(set_path).expanduser()
+        if self._set_path.exists():
+            print('Set csv file found. {0}'.format(self._set_path))
+        else:
+            print('Set csv file does not exist! {0}'.format(self._set_path))
+            return
+
+        print('Sending set to controller.')
+        with open(self._set_path) as set_csvfile:
+            setreader = csv.DictReader(set_csvfile)
+            checked_header = False
+            for block_flat in setreader:
+                if not checked_header:
+                    if set(block_flat.keys()) == set(self._block_fieldnames):
+                        print('Set csv file header is correct.')
+                    else:
+                        print('Set csv file header does not match this: {0}'.format(self._block_fieldnames))
+                        return
+                    checked_header = True
+                block_unflattened = flatten_json.unflatten_list(block_flat,separator=self._SEPARATOR)
+                block = {}
+                for key, value in block_unflattened.items():
+                    if isinstance(value,str):
+                        block[key] = int(value)
+                    elif isinstance(value,list):
+                        block[key] = [int(element) for element in value]
+                block_added = self.mouse_joystick_controller.add_block_to_set(block['repeat_trial_count'],
+                                                                              block['pull_torque'],
+                                                                              block['lickport_reward_duration'],
+                                                                              block['reach_position'])
+                if block_added == block:
+                    print('Added block to set. {0}'.format(block_added))
+
+        print('Setting up trial csv output file.')
+        self._assay_path = self._base_path / self._get_date_time_str()
+        self._assay_path.mkdir(parents=True,exist_ok=True)
         trials_filename = 'trials.csv'
-        trials_path = os.path.join(self._assay_path,trials_filename)
+        trials_path = self._assay_path / trials_filename
         self._trials_file = open(trials_path,'w')
         self._trials_writer = csv.DictWriter(self._trials_file,fieldnames=self._trials_fieldnames)
         self._trials_writer.writeheader()
-        self.mouse_joystick_controller.start_assay()
-        self._assay_running = True
-        self._check_for_unread_data_timer = Timer(self._CHECK_FOR_UNREAD_DATA_PERIOD,self._check_for_unread_data)
-        self._check_for_unread_data_timer.start()
-        print('Assay running!')
+        print('Trials.csv file created. {0}'.format(trials_path))
+
+        self._assay_running = self.mouse_joystick_controller.start_assay()
+
+        if self._assay_running:
+            self._check_for_unread_data_timer = Timer(self._CHECK_FOR_UNREAD_DATA_PERIOD,self._check_for_unread_data)
+            self._check_for_unread_data_timer.start()
+            print('Assay running!')
+        else:
+            print('Assay not running!')
 
     def abort_assay(self):
         self._assay_running = False
@@ -173,17 +221,15 @@ class MouseJoystickInterface():
         if not self._assay_running:
             return
         status = self.mouse_joystick_controller.get_assay_status()
-        unread_trial_timing_data = status.pop('unread_trial_timing_data')
         state = status.pop('state')
+        unread_trial_timing_data = status.pop('unread_trial_timing_data')
+        #
+        unread_trial_timing_data = True
         if unread_trial_timing_data:
-            trial_filename = 'trial_{0}.csv'.format(status['trial_index'])
-            trial_path = os.path.join(self._assay_path,trial_filename)
-            with open(trial_path,'w') as trial_file:
-                self._trial_writer = csv.writer(trial_file,quotechar='\"',quoting=csv.QUOTE_MINIMAL)
-                self._trial_writer.writerow(self._trial_fieldnames)
             trial_timing_data = self.mouse_joystick_controller.get_trial_timing_data()
             trial_timing_data_date_time = {key: self._get_date_time_str(value) for (key,value) in trial_timing_data.items()}
             trial_data = {**status,**trial_timing_data_date_time}
+            trial_data = flatten_json.flatten(trial_data,separator=self._SEPARATOR)
             print('Trial data:')
             print(trial_data)
             self._trials_writer.writerow(trial_data)

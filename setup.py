@@ -40,5 +40,6 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=['contrib', 'docs', 'tests*']),
 
     install_requires=['modular_client',
+                      'flatten_json',
     ],
 )
