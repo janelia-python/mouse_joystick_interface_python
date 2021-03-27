@@ -4,7 +4,7 @@
 
 * Package Information
   - Name :: mouse_joystick_interface_python
-  - Version :: 4.0.1
+  - Version :: 4.0.2
   - License :: BSD
   - URL :: https://github.com/janelia-pypi/mouse_joystick_interface_python
   - Author :: Peter Polidoro

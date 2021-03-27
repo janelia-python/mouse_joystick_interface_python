@@ -176,9 +176,17 @@ class MouseJoystickInterface():
             print('Assay running!')
         else:
             print('Assay not running!')
+            self._cleanup()
 
     def abort_assay(self):
         self._assay_running = False
+        self._cleanup()
+        try:
+            self.mouse_joystick_controller.abort_assay()
+        except:
+            pass
+
+    def _cleanup(self):
         try:
             self._trials_file.close()
         except (AttributeError,ValueError):
@@ -186,10 +194,6 @@ class MouseJoystickInterface():
         try:
             self._check_for_unread_data_timer.cancel()
         except AttributeError:
-            pass
-        try:
-            self.mouse_joystick_controller.abort_assay()
-        except:
             pass
 
     def _debug_print(self, *args):
@@ -234,6 +238,7 @@ class MouseJoystickInterface():
             self.mouse_joystick_controller.set_time(int(time.time()))
         if state == 'ASSAY_FINISHED':
             self._assay_running = False
+            self._cleanup()
         else:
             self._check_for_unread_data_timer = Timer(self._CHECK_FOR_UNREAD_DATA_PERIOD,self._check_for_unread_data)
             self._check_for_unread_data_timer.start()
