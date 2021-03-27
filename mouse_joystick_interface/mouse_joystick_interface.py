@@ -124,7 +124,10 @@ class MouseJoystickInterface():
         print('Setting time.')
         self.mouse_joystick_controller.set_time(int(time.time()))
 
-        print('Importing set csv file.')
+        print('Clearing old set in controller.')
+        self.mouse_joystick_controller.clear_set()
+
+        print('Importing new set csv file.')
         self._set_path = pathlib.Path(set_path).expanduser()
         if self._set_path.exists():
             print('Set csv file found. {0}'.format(self._set_path))
@@ -132,7 +135,7 @@ class MouseJoystickInterface():
             print('Set csv file does not exist! {0}'.format(self._set_path))
             return
 
-        print('Sending set to controller.')
+        print('Sending new set to controller.')
         with open(self._set_path) as set_csvfile:
             setreader = csv.DictReader(set_csvfile)
             checked_header = False
