@@ -124,7 +124,7 @@ class MouseJoystickInterface():
         print('Setting time.')
         self.mouse_joystick_controller.set_time(int(time.time()))
 
-        print('Clearing old set in controller.')
+        print('Clearing any previous set from controller.')
         self.mouse_joystick_controller.clear_set()
 
         print('Importing new set csv file.')
@@ -160,6 +160,8 @@ class MouseJoystickInterface():
                                                                               block['reach_position'])
                 if block_added == block:
                     print('Added block to set. {0}'.format(block_added))
+                else:
+                    raise RuntimeError('Block added does not equal block in csv file!')
 
         print('Setting up trial csv output file.')
         self._assay_path = self._base_path / self._get_date_time_str()

@@ -19,6 +19,7 @@ RUN chown -R developer:developer $DEVELOPMENT_PACKAGE_PATH
 
 USER developer
 
+RUN pip install --upgrade pip
 RUN pip install ipython
 
 ENTRYPOINT ["/bin/bash"]
