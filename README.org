@@ -17,29 +17,29 @@
 
 
   #+BEGIN_SRC python
-    from mouse_joystick_interface import MouseJoystickInterface
-    dev = MouseJoystickInterface() # Might automatically find devices if available
-    # if devices not found automatically, specify ports directly
-    dev = MouseJoystickInterface(use_ports=['/dev/ttyACM0','/dev/ttyACM0']) # Linux specific ports
-    dev = MouseJoystickInterface(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X specific ports
-    dev = MouseJoystickInterface(use_ports=['COM3','COM4']) # Windows specific ports
-    # abort_assay prematurely stops a running assay and leaves the rig ready to start a new assay
-    dev.abort_assay()
-    # start_assay is the main method that starts the assay, collects assay data, and saves data files
-    dev.start_assay(set_path='~/set_example.csv')
+		from mouse_joystick_interface import MouseJoystickInterface
+		dev = MouseJoystickInterface() # Might automatically find devices if available
+		# if devices not found automatically, specify ports directly
+		dev = MouseJoystickInterface(use_ports=['/dev/ttyACM0','/dev/ttyACM0']) # Linux specific ports
+		dev = MouseJoystickInterface(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X specific ports
+		dev = MouseJoystickInterface(use_ports=['COM3','COM4']) # Windows specific ports
+		# abort_assay prematurely stops a running assay and leaves the rig ready to start a new assay
+		dev.abort_assay()
+		# start_assay is the main method that starts the assay, collects assay data, and saves data files
+		dev.start_assay(set_path='~/set_example.csv')
 
-    # optional mouse_joystick_controller methods
-    dev.mouse_joystick_controller.set_properties_to_defaults(['ALL'])
-    dev.mouse_joystick_controller.get_property_values(['ALL'])
-    dev.mouse_joystick_controller.repeat_aborted_trial('setValue',False)
-    dev.mouse_joystick_controller.get_assay_status()
-    dev.mouse_joystick_controller.move_joystick_to_base_position()
-    dev.mouse_joystick_controller.move_joystick_to_reach_position()
-    duration = 10
-    count = 1
-    dev.mouse_joystick_controller.activate_lickport(duration,count)
-    dev.mouse_joystick_controller.get_trial_timing_data()
-    dev.mouse_joystick_controller.abort_trial()
+		# optional mouse_joystick_controller methods
+		dev.mouse_joystick_controller.set_properties_to_defaults(['ALL'])
+		dev.mouse_joystick_controller.get_property_values(['ALL'])
+		dev.mouse_joystick_controller.repeat_aborted_trial('setValue',False)
+		dev.mouse_joystick_controller.get_assay_status()
+		dev.mouse_joystick_controller.move_joystick_to_base_position()
+		dev.mouse_joystick_controller.move_joystick_to_reach_position()
+		duration = 10
+		count = 1
+		dev.mouse_joystick_controller.activate_lickport(duration,count)
+		dev.mouse_joystick_controller.get_trial_timing_data()
+		dev.mouse_joystick_controller.abort_trial()
   #+END_SRC
 
 * Example Set CSV Input File
@@ -68,87 +68,44 @@ finished_trial_count,successful_trial_count,trial_aborted,assay_aborted,pull_thr
 
    [[https://github.com/janelia-arduino/arduino_setup]]
 
-** Linux and Mac OS X
+** Docker
+
+*** Build
+
+		#+BEGIN_SRC sh
+
+			docker stop $(docker ps -aq)
+			docker system prune -f
+			docker build -t python_package:latest .
+
+		#+END_SRC
+
+*** Run
+
+		#+BEGIN_SRC sh
+
+			docker run -it --device=/dev/ttyACM0 python_package:latest
+
+		#+END_SRC
+
+** Python Virtual Environment
 
    #+BEGIN_SRC sh
-     mkdir -p ~/virtualenvs/mouse_joystick_interface
-     virtualenv ~/virtualenvs/mouse_joystick_interface
-     #Python3
-     virtualenv -p python3 ~/virtualenvs/mouse_joystick_interface
-     source ~/virtualenvs/mouse_joystick_interface/bin/activate
-     pip install mouse_joystick_interface
-   #+END_SRC
-
-** Windows
-
-   #+BEGIN_SRC sh
-     virtualenv C:\virtualenvs\mouse_joystick_interface
-     C:\virtualenvs\mouse_joystick_interface\Scripts\activate
-     pip install mouse_joystick_interface
+		 python3 -m venv ~/venvs/mji
+		 source ~/venvs/mji/bin/activate
+		 pip install mouse_joystick_interface
    #+END_SRC
 
 * Development
-
-** Build Development Docker Image
-
-   #+BEGIN_SRC sh
-
-     docker stop $(docker ps -aq)
-     docker system prune -f
-     docker build -t python_package_dev:latest -f Dockerfile.dev .
-
-   #+END_SRC
-
-** Run Development Docker Container
-
-   #+BEGIN_SRC sh
-
-     docker run -it --device=/dev/ttyACM0 python_package_dev:latest
-
-   #+END_SRC
-
-** Install This Package
-
-   #+BEGIN_SRC sh
-
-     cd python_package
-     python setup.py install
-
-   #+END_SRC
-
-** Run ipython and Test
-
-   #+BEGIN_SRC sh
-
-     ipython
-
-   #+END_SRC
 
 ** Commit, Tag, and Upload to Pypi
 
    #+BEGIN_SRC sh
 
-     # git commit ...
-     # git tag ...
-     python3 setup.py sdist bdist_wheel
-     twine upload dist/*
-     git clean -xdf
+		 # git commit ...
+		 # git tag ...
+		 python3 setup.py sdist bdist_wheel
+		 twine upload dist/*
+		 git clean -xdf
 
    #+END_SRC
-
-** Build Docker Image
-
-   #+BEGIN_SRC sh
-
-     docker build -t python_package:latest .
-
-   #+END_SRC
-
-** Run Docker Container
-
-   #+BEGIN_SRC sh
-
-     docker run -it --device=/dev/ttyACM0 python_package:latest
-
-   #+END_SRC
-
