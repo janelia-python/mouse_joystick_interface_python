@@ -3,12 +3,12 @@
 #+EMAIL: peter@polidoro.io
 
 * Package Information
-  - Name :: mouse_joystick_interface_python
-  - Version :: 4.0.3
-  - License :: BSD
-  - URL :: https://github.com/janelia-pypi/mouse_joystick_interface_python
-  - Author :: Peter Polidoro
-  - Email :: peter@polidoro.io
+- Name :: mouse_joystick_interface_python
+- Version :: 4.0.3
+- License :: BSD
+- URL :: https://github.com/janelia-pypi/mouse_joystick_interface_python
+- Author :: Peter Polidoro
+- Email :: peter@polidoro.io
 
   This Python package (mouse_joystick_interface) creates a class named
   MouseJoystickInterface.
@@ -16,10 +16,11 @@
 * Example Usage
 
 
-  #+BEGIN_SRC python
-		from mouse_joystick_interface import MouseJoystickInterface
-		dev = MouseJoystickInterface() # Might automatically find devices if available
-		# if devices not found automatically, specify ports directly
+#+BEGIN_SRC python
+
+from mouse_joystick_interface import MouseJoystickInterface
+dev = MouseJoystickInterface() # Might automatically find devices if available
+# if devices not found automatically, specify ports directly
 		dev = MouseJoystickInterface(use_ports=['/dev/ttyACM0','/dev/ttyACM0']) # Linux specific ports
 		dev = MouseJoystickInterface(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X specific ports
 		dev = MouseJoystickInterface(use_ports=['COM3','COM4']) # Windows specific ports
@@ -40,72 +41,45 @@
 		dev.mouse_joystick_controller.activate_lickport(duration,count)
 		dev.mouse_joystick_controller.get_trial_timing_data()
 		dev.mouse_joystick_controller.abort_trial()
-  #+END_SRC
+
+#+END_SRC
 
 * Example Set CSV Input File
 
-	#+BEGIN_VERSE
+#+BEGIN_VERSE
+
 repeat_trial_count,pull_torque,lickport_reward_duration,reach_position.0,reach_position.1
 2,50,100,20,200
 3,75,120,30,300
-	#+END_VERSE
+
+#+END_VERSE
 
 * Example Trials CSV Ouput File
 
-	#+BEGIN_VERSE
+#+BEGIN_VERSE
+
 finished_trial_count,successful_trial_count,trial_aborted,assay_aborted,pull_threshold,set_in_assay,repeat_set_count,block_in_set,block_count,trial_in_block,block.repeat_trial_count,block.pull_torque,block.lickport_reward_duration,block.reach_position.0,block.reach_position.1,trial_start,mouse_ready,joystick_ready,pull,push,timeout,trial_abort
-	#+END_VERSE
+
+#+END_VERSE
 
 * More Detailed Modular Device Information
 
-  [[https://github.com/janelia-modular-devices/modular-devices]]
+[[https://github.com/janelia-modular-devices/modular-devices]]
 
 * Installation
 
-  [[https://github.com/janelia-pypi/python_setup]]
+[[https://github.com/janelia-pypi/python_setup]]
 
 ** Install Arduino and Teensyduino on your Host Machine
 
-   [[https://github.com/janelia-arduino/arduino_setup]]
-
-** Docker
-
-*** Build
-
-		#+BEGIN_SRC sh
-
-			docker stop $(docker ps -aq)
-			docker system prune -f
-			docker build -t python_package:latest .
-
-		#+END_SRC
-
-*** Run
-
-		#+BEGIN_SRC sh
-
-			docker run -it --device=/dev/ttyACM0 python_package:latest
-
-		#+END_SRC
+[[https://github.com/janelia-arduino/arduino_setup]]
 
 ** Python Virtual Environment
 
-   #+BEGIN_SRC sh
-		 python3 -m venv ~/venvs/mji
-		 source ~/venvs/mji/bin/activate
-		 pip install mouse_joystick_interface
-   #+END_SRC
+#+BEGIN_SRC sh
 
-* Development
+python3 -m venv ~/venvs/mji
+source ~/venvs/mji/bin/activate
+pip install mouse_joystick_interface
 
-** Commit, Tag, and Upload to Pypi
-
-   #+BEGIN_SRC sh
-
-		 # git commit ...
-		 # git tag ...
-		 python3 setup.py sdist bdist_wheel
-		 twine upload dist/*
-		 git clean -xdf
-
-   #+END_SRC
+#+END_SRC
