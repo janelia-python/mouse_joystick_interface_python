@@ -4,7 +4,7 @@
 
 * Package Information
 - Name :: mouse_joystick_interface_python
-- Version :: 4.0.3
+- Version :: 4.0.5
 - License :: BSD
 - URL :: https://github.com/janelia-pypi/mouse_joystick_interface_python
 - Author :: Peter Polidoro
@@ -21,26 +21,26 @@
 from mouse_joystick_interface import MouseJoystickInterface
 dev = MouseJoystickInterface() # Might automatically find devices if available
 # if devices not found automatically, specify ports directly
-		dev = MouseJoystickInterface(use_ports=['/dev/ttyACM0','/dev/ttyACM0']) # Linux specific ports
-		dev = MouseJoystickInterface(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X specific ports
-		dev = MouseJoystickInterface(use_ports=['COM3','COM4']) # Windows specific ports
-		# abort_assay prematurely stops a running assay and leaves the rig ready to start a new assay
-		dev.abort_assay()
-		# start_assay is the main method that starts the assay, collects assay data, and saves data files
-		dev.start_assay(set_path='~/set_example.csv')
+dev = MouseJoystickInterface(use_ports=['/dev/ttyACM0','/dev/ttyACM0']) # Linux specific ports
+dev = MouseJoystickInterface(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X specific ports
+dev = MouseJoystickInterface(use_ports=['COM3','COM4']) # Windows specific ports
+# abort_assay prematurely stops a running assay and leaves the rig ready to start a new assay
+dev.abort_assay()
+# start_assay is the main method that starts the assay, collects assay data, and saves data files
+dev.start_assay(set_path='~/set_example.csv')
 
-		# optional mouse_joystick_controller methods
-		dev.mouse_joystick_controller.set_properties_to_defaults(['ALL'])
-		dev.mouse_joystick_controller.get_property_values(['ALL'])
-		dev.mouse_joystick_controller.repeat_aborted_trial('setValue',False)
-		dev.mouse_joystick_controller.get_assay_status()
-		dev.mouse_joystick_controller.move_joystick_to_base_position()
-		dev.mouse_joystick_controller.move_joystick_to_reach_position()
-		duration = 10
-		count = 1
-		dev.mouse_joystick_controller.activate_lickport(duration,count)
-		dev.mouse_joystick_controller.get_trial_timing_data()
-		dev.mouse_joystick_controller.abort_trial()
+# optional mouse_joystick_controller methods
+dev.mouse_joystick_controller.set_properties_to_defaults(['ALL'])
+dev.mouse_joystick_controller.get_property_values(['ALL'])
+dev.mouse_joystick_controller.repeat_aborted_trial('setValue',False)
+dev.mouse_joystick_controller.get_assay_status()
+dev.mouse_joystick_controller.move_joystick_to_base_position()
+dev.mouse_joystick_controller.move_joystick_to_reach_position()
+duration = 10
+count = 1
+dev.mouse_joystick_controller.activate_lickport(duration,count)
+dev.mouse_joystick_controller.get_trial_timing_data()
+dev.mouse_joystick_controller.abort_trial()
 
 #+END_SRC
 
@@ -62,24 +62,42 @@ finished_trial_count,successful_trial_count,trial_aborted,assay_aborted,pull_thr
 
 #+END_VERSE
 
-* More Detailed Modular Device Information
-
-[[https://github.com/janelia-modular-devices/modular-devices]]
-
 * Installation
 
 [[https://github.com/janelia-pypi/python_setup]]
 
-** Install Arduino and Teensyduino on your Host Machine
-
-[[https://github.com/janelia-arduino/arduino_setup]]
-
-** Python Virtual Environment
+** Linux and Mac OS X
 
 #+BEGIN_SRC sh
 
-python3 -m venv ~/venvs/mji
-source ~/venvs/mji/bin/activate
+python3 -m venv ~/venvs/mouse_joystick_interface
+source ~/venvs/mouse_joystick_interface/bin/activate
 pip install mouse_joystick_interface
 
 #+END_SRC
+
+** Windows
+
+#+BEGIN_SRC sh
+
+python3 -m venv C:\venvs\mouse_joystick_interface
+C:\venvs\mouse_joystick_interface\Scripts\activate
+pip install mouse_joystick_interface
+
+#+END_SRC
+
+* Development
+
+** Guix
+
+#+BEGIN_SRC sh
+
+guix time-machine -C channels.scm -- shell --pure -D -f guix.scm
+python3 setup.py sdist bdist_wheel
+twine upload dist/*
+git add --all
+git clean -xdf
+exit
+
+#+END_SRC
+

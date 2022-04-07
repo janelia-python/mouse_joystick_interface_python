@@ -11,8 +11,7 @@ with codecs.open(here.joinpath('DESCRIPTION.rst'), encoding='utf-8') as f:
 setuptools.setup(
     name='mouse_joystick_interface',
 
-    use_scm_version = True,
-    setup_requires=['setuptools_scm'],
+    version = '4.0.5',
 
     description='Mouse joystick interface for communicating with mouse joystick controller.',
     long_description=long_description,
