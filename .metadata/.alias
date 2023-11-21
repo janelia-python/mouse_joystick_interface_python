@@ -1,0 +1,3 @@
+# This file is generated automatically from metadata.org
+# File edits may be overwritten!
+alias ,make=make\ -f\ .metadata/Makefile
