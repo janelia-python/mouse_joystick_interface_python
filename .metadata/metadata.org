@@ -26,7 +26,7 @@ python-mouse-joystick-interface
 
 #+NAME: version
 #+BEGIN_SRC text :exports none :noweb yes
-0.1.0
+5.0.0
 #+END_SRC
 
 #+NAME: description
@@ -41,14 +41,12 @@ Python interface to the Dudman lab Mouse Joystick Rig.
 
 #+NAME: python-dependencies
 #+BEGIN_SRC text :exports none :noweb yes
-pyserial
-click
+modular_client
+flatten_json
 #+END_SRC
 
 #+NAME: guix-dependencies
 #+BEGIN_SRC text :exports none :noweb yes
-python-pyserial
-python-click
 #+END_SRC
 
 #+NAME: command-line-interface

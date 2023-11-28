@@ -1,0 +1,4 @@
+repeat_trial_count,pull_torque,lickport_reward_duration,zero_torque_reward_delay,reach_position.0,reach_position.1
+2,50,100,0,20,200
+3,75,120,0,30,300
+2,0,100,3,5,200

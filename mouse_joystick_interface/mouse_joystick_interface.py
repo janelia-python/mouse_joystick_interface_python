@@ -1,4 +1,3 @@
-from __future__ import print_function, division
 import time
 import atexit
 import os
@@ -10,20 +9,6 @@ import json
 import flatten_json
 
 from modular_client import ModularClients
-
-try:
-    from pkg_resources import get_distribution, DistributionNotFound
-    _dist = get_distribution('mouse_joystick_interface')
-    # Normalize case for Windows systems
-    dist_loc = os.path.normcase(_dist.location)
-    here = os.path.normcase(__file__)
-    if not here.startswith(os.path.join(dist_loc, 'mouse_joystick_interface')):
-        # not installed, but there is another version that *is*
-        raise DistributionNotFound
-except (ImportError,DistributionNotFound):
-    __version__ = None
-else:
-    __version__ = _dist.version
 
 
 DEBUG = False
@@ -86,6 +71,7 @@ class MouseJoystickInterface():
                                    'block.repeat_trial_count',
                                    'block.pull_torque',
                                    'block.lickport_reward_duration',
+                                   'block.zero_torque_reward_delay',
                                    'block.reach_position.0',
                                    'block.reach_position.1',
                                    'trial_start',
@@ -98,6 +84,7 @@ class MouseJoystickInterface():
         self._block_fieldnames = ['repeat_trial_count',
                                   'pull_torque',
                                   'lickport_reward_duration',
+                                  'zero_torque_reward_delay',
                                   'reach_position.0',
                                   'reach_position.1']
         self._setup_modular_clients()
@@ -107,7 +94,7 @@ class MouseJoystickInterface():
     def _setup_modular_clients(self):
         self._modular_clients = ModularClients(*self._args,**self._kwargs)
         mjc_name = 'mouse_joystick_controller'
-        
+
         mjc_form_factor = '5x3'
         mjc_serial_number = 0
         if (mjc_name not in self._modular_clients):
@@ -157,6 +144,7 @@ class MouseJoystickInterface():
                 block_added = self.mouse_joystick_controller.add_block_to_set(block['repeat_trial_count'],
                                                                               block['pull_torque'],
                                                                               block['lickport_reward_duration'],
+                                                                              block['zero_torque_reward_delay'],
                                                                               block['reach_position'])
                 if block_added == block:
                     print('Added block to set. {0}'.format(block_added))
