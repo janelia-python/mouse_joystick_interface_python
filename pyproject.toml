@@ -1,0 +1,38 @@
+# This file is generated automatically from metadata
+# File edits may be overwritten!
+[build-system]
+requires = ["hatchling"]
+build-backed = "hatchling.build"
+
+[tool.hatch]
+version.path = "src/mouse_joystick_interface/__init__.py"
+
+[project]
+name = "mouse_joystick_interface"
+description = "Python interface to the Dudman lab Mouse Joystick Rig."
+readme = "README.md"
+license.file = "LICENSE"
+authors = [
+  { name = "Peter Polidoro", email = "peter@polidoro.io" },
+]
+maintainers = [
+  { name = "Peter Polidoro", email = "peter@polidoro.io" },
+]
+requires-python = ">=3.8"
+
+dependencies = [
+  "modular_client"
+  "flatten_json"
+]
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: BSD License",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Scientific/Engineering",
+]
+
+[project.urls]
+Homepage = "https://github.com/janelia-pypi/mouse_joystick_interface_python"
+Documentation = "https://github.com/janelia-pypi/mouse_joystick_interface_python"
+"Bug Tracker" = "https://github.com/janelia-pypi/mouse_joystick_interface_python/issues"

@@ -1,5 +1,5 @@
-FROM arena_host-dev
-WORKDIR /arena_host_python
+FROM mouse_joystick_interface-dev
+WORKDIR /mouse_joystick_interface_python
 
 RUN pip install --user .
 

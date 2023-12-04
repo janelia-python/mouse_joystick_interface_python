@@ -8,7 +8,7 @@ RUN pip install --user ipython
 
 # second unnamed stage
 FROM python:3.10-slim
-WORKDIR /arena_host_python
+WORKDIR /mouse_joystick_interface_python
 
 # copy only the dependencies installation from the 1st stage image
 COPY --from=builder /root/.local /root/.local

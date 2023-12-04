@@ -14,7 +14,7 @@
 mouse_joystick_interface
 #+END_SRC
 
-#+NAME: repository-name
+#+NAME: repository-name 
 #+BEGIN_SRC text :exports none :noweb yes
 mouse_joystick_interface_python
 #+END_SRC
@@ -45,8 +45,16 @@ modular_client
 flatten_json
 #+END_SRC
 
+#+NAME: pyproject-dependencies
+#+BEGIN_SRC text :exports none :noweb yes
+"modular_client",
+"flatten_json"
+#+END_SRC
+
 #+NAME: guix-dependencies
 #+BEGIN_SRC text :exports none :noweb yes
+python-modular-client
+python-flatten-json
 #+END_SRC
 
 #+NAME: command-line-interface
@@ -56,7 +64,7 @@ mouse-joystick-interface
 
 #+NAME: references
 #+BEGIN_SRC text :exports none :noweb yes
-https://github.com/janelia-arduino/ArenaController
+https://github.com/janelia-kicad/mouse_joystick_controller
 #+END_SRC
 
 #+NAME: creation-date
@@ -176,27 +184,47 @@ Python 3
 ** Python
 
 #+BEGIN_SRC python
-from mouse_joystick_interface import ArenaHost
+from mouse_joystick_interface import MouseJoystickInterface
+dev = MouseJoystickInterface() # Might automatically find devices if available
+# if devices not found automatically, specify ports directly
+dev = MouseJoystickInterface(use_ports=['/dev/ttyACM0','/dev/ttyACM0']) # Linux specific ports
+dev = MouseJoystickInterface(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X specific ports
+dev = MouseJoystickInterface(use_ports=['COM3','COM4']) # Windows specific ports
+# abort_assay prematurely stops a running assay and leaves the rig ready to start a new assay
+dev.abort_assay()
+# start_assay is the main method that starts the assay, collects assay data, and saves data files
+dev.start_assay(set_path='~/set_example.csv')
+
+# optional mouse_joystick_controller methods
+dev.mouse_joystick_controller.set_properties_to_defaults(['ALL'])
+dev.mouse_joystick_controller.get_property_values(['ALL'])
+dev.mouse_joystick_controller.repeat_aborted_trial('setValue',False)
+dev.mouse_joystick_controller.get_assay_status()
+dev.mouse_joystick_controller.move_joystick_to_base_position()
+dev.mouse_joystick_controller.move_joystick_to_reach_position()
+duration = 10
+count = 1
+dev.mouse_joystick_controller.activate_lickport(duration,count)
+dev.mouse_joystick_controller.get_trial_timing_data()
+dev.mouse_joystick_controller.abort_trial()
 #+END_SRC
 
 ** Command Line
 
-*** help
+* Example Set CSV Input File
 
-#+BEGIN_SRC sh :noweb yes
-<<command-line-interface>> --help
-# Usage: <<command-line-interface>> [OPTIONS]
+#+BEGIN_VERSE
+repeat_trial_count,pull_torque,lickport_reward_duration,zero_torque_reward_delay,reach_position.0,reach_position.1
+2,50,100,0,20,200
+3,75,120,0,30,300
+2,0,100,3,5,200
+#+END_VERSE
 
-#   Command line interface for arena host.
+* Example Trials CSV Ouput File
 
-# Options:
-#   -p, --port TEXT          Device name (e.g. /dev/ttyACM0 on GNU/Linux or COM3
-#                            on Windows)
-#   --debug                  Print debugging information.
-#   -h, --help               Show this message and exit.
-#+END_SRC
-
-#+RESULTS:
+#+BEGIN_VERSE
+finished_trial_count,successful_trial_count,trial_aborted,assay_aborted,pull_threshold,set_in_assay,repeat_set_count,block_in_set,block_count,trial_in_block,block.repeat_trial_count,block.pull_torque,block.lickport_reward_duration,block.zero_torque_reward_delay,block.reach_position.0,block.reach_position.1,trial_start,mouse_ready,joystick_ready,pull,push,timeout,trial_abort
+#+END_VERSE
 
 * Installation
 
@@ -388,12 +416,18 @@ exit
         (url "https://git.savannah.gnu.org/git/guix.git")
         (branch "master")
         (commit
-          "71b92466430acb8c91841522dc0eb7d766af4388")
+          "6e2dd51df5f3f51e9056dd4f2e1b036195ab3caa")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"
             (openpgp-fingerprint
-              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
+              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
+      (channel
+        (name 'guix-janelia)
+        (url "https://github.com/guix-janelia/guix-janelia.git")
+        (branch "main")
+        (commit
+          "08fe0b2ecb68d9e17dfa4802c79935ea6339d6d1")))
 #+END_SRC
 
 #+BEGIN_SRC scheme :tangle guix/guix.scm :exports none :noweb yes
@@ -404,12 +438,12 @@ exit
  (guix git-download)
  (guix gexp)
  ((guix licenses) #:prefix license:)
- (guix build-system python)
+ (guix build-system pyproject)
  (gnu packages base)
  (gnu packages emacs)
  (gnu packages emacs-xyz)
- (gnu packages python-build)
  (gnu packages python-xyz)
+ (gnu packages python-build)
  (gnu packages imagemagick)
  (gnu packages version-control)
  (gnu packages ncurses))
@@ -423,15 +457,20 @@ exit
     (source (local-file %source-dir
                         #:recursive? #t
                         #:select? (git-predicate %source-dir)))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
+    (arguments
+     `(#:tests? #f))
     (native-inputs (list gnu-make
                          git
                          emacs
                          emacs-org
                          emacs-ox-gfm
+                         python-hatchling
                          python-wheel
                          python-twine
                          python-ipython
+                         python-virtualenv
+                         python-pip
                          imagemagick))
     (propagated-inputs (list
                         ncurses
@@ -474,12 +513,6 @@ WORKDIR /<<repository-name>>
 RUN pip install --user .
 
 CMD ["bash"]
-#+END_SRC
-
-#+BEGIN_SRC text :tangle .alias :exports none :noweb yes
-# This file is generated automatically from metadata.org
-# File edits may be overwritten!
-alias ,make=make\ -f\ .metadata/Makefile
 #+END_SRC
 
 #+BEGIN_SRC text :tangle Makefile :exports none :noweb yes
@@ -623,7 +656,7 @@ docker-container-port:
 
 (setq enable-local-variables nil)
 (setq tangle-external-files t)
-(setq python-package-dir (concat "../" "<<python-package-name>>"))
+(setq python-package-dir (concat "../src/" "<<python-package-name>>"))
 #+END_SRC
 
 #+HEADER: :tangle (if tangle-external-files "../AUTHORS" "no")
@@ -666,48 +699,40 @@ docker-container-port:
 # This file is generated automatically from metadata
 # File edits may be overwritten!
 [build-system]
-requires = ["setuptools"]
-build-backed = "setuptools.build_meta"
-#+END_SRC
+requires = ["hatchling"]
+build-backed = "hatchling.build"
 
-#+HEADER: :tangle (if tangle-external-files "../setup.cfg" "no")
-#+BEGIN_SRC text :exports none :noweb yes
-# This file is generated automatically from metadata
-# File edits may be overwritten!
-[metadata]
-name = <<python-package-name>>
-version = <<version>>
-author = <<author>>
-author_email = <<email>>
-url = <<repository-url>>
-description = <<description>>
-long_description = file: README.md
-long_description_content_type = text/markdown
-license = <<license>>
-license_files = <<license-files>>
-classifiers =
-    Programming Language :: Python :: 3
+[tool.hatch]
+version.path = "src/<<python-package-name>>/__init__.py"
 
-[options]
-packages = find:
-install_requires =
-    <<python-dependencies>>
+[project]
+name = "<<python-package-name>>"
+description = "<<description>>"
+readme = "README.md"
+license.file = "<<license-files>>"
+authors = [
+  { name = "<<author>>", email = "<<email>>" },
+]
+maintainers = [
+  { name = "<<author>>", email = "<<email>>" },
+]
+requires-python = ">=3.8"
 
-[options.entry_points]
-console_scripts =
-    <<command-line-interface>> = <<python-package-name>>.cli:cli
-#+END_SRC
+dependencies = [
+  <<pyproject-dependencies>>
+]
 
-#+HEADER: :tangle (if tangle-external-files "../setup.py" "no")
-#+BEGIN_SRC python :exports none :noweb yes
-"""<<description>>"""
-# This file is generated automatically from metadata
-# File edits may be overwritten!
-from setuptools import setup
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: BSD License",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Scientific/Engineering",
+]
 
-
-if __name__ == '__main__':
-    setup()
+[project.urls]
+Homepage = "<<repository-url>>"
+Documentation = "<<repository-url>>"
+"Bug Tracker" = "<<repository-url>>/issues"
 #+END_SRC
 
 #+HEADER: :tangle (if tangle-external-files  (concat python-package-dir "/__about__.py") "no")
@@ -739,7 +764,7 @@ from <<python-package-name>>.__about__ import (
     __url__,
     __version__)
 
-from .<<python-package-name>> import ArenaHost
+from .<<python-package-name>> import MouseJoystickInterface
 #+END_SRC
 
 #+NAME: license-text

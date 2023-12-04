@@ -5,12 +5,12 @@
  (guix git-download)
  (guix gexp)
  ((guix licenses) #:prefix license:)
- (guix build-system python)
+ (guix build-system pyproject)
  (gnu packages base)
  (gnu packages emacs)
  (gnu packages emacs-xyz)
- (gnu packages python-build)
  (gnu packages python-xyz)
+ (gnu packages python-build)
  (gnu packages imagemagick)
  (gnu packages version-control)
  (gnu packages ncurses))
@@ -24,20 +24,25 @@
     (source (local-file %source-dir
                         #:recursive? #t
                         #:select? (git-predicate %source-dir)))
-    (build-system python-build-system)
+    (build-system pyproject-build-system)
+    (arguments
+     `(#:tests? #f))
     (native-inputs (list gnu-make
                          git
                          emacs
                          emacs-org
                          emacs-ox-gfm
+                         python-hatchling
                          python-wheel
                          python-twine
                          python-ipython
+                         python-virtualenv
+                         python-pip
                          imagemagick))
     (propagated-inputs (list
                         ncurses
-                        python-pyserial
-                        python-click))
+                        python-modular-client
+                        python-flatten-json))
     (home-page "")
     (synopsis "")
     (description "")
