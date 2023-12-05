@@ -1,22 +1,22 @@
-- [About](#orge5ac949)
-- [Example Usage](#orgab5654d)
-- [Example Set CSV Input File](#org3f17bee)
-- [Example Trials CSV Ouput File](#orge872842)
-- [Installation](#orga22e627)
-- [Development](#org3690cc6)
+- [About](#org29e76fc)
+- [Example Usage](#org61c8aa7)
+- [Example Set CSV Input File](#org373a4a1)
+- [Example Trials CSV Ouput File](#org50b63ac)
+- [Installation](#org0c3eee0)
+- [Development](#org9ef74bc)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="orge5ac949"></a>
+<a id="org29e76fc"></a>
 
 # About
 
 ```markdown
 - Python Package Name: mouse_joystick_interface
 - Description: Python interface to the Dudman lab Mouse Joystick Rig.
-- Version: 5.0.0
+- Version: 5.0.1
 - Python Version: 3.10
 - Release Date: 2023-12-05
 - Creation Date: 2023-10-17
@@ -33,7 +33,7 @@
 ```
 
 
-<a id="orgab5654d"></a>
+<a id="org61c8aa7"></a>
 
 # Example Usage
 
@@ -70,7 +70,7 @@ dev.mouse_joystick_controller.abort_trial()
 ## Command Line
 
 
-<a id="org3f17bee"></a>
+<a id="org373a4a1"></a>
 
 # Example Set CSV Input File
 
@@ -82,7 +82,7 @@ repeat\_trial\_count,pull\_torque,lickport\_reward\_duration,zero\_torque\_rewar
 </p>
 
 
-<a id="orge872842"></a>
+<a id="org50b63ac"></a>
 
 # Example Trials CSV Ouput File
 
@@ -91,7 +91,7 @@ finished\_trial\_count,successful\_trial\_count,trial\_aborted,assay\_aborted,pu
 </p>
 
 
-<a id="orga22e627"></a>
+<a id="org0c3eee0"></a>
 
 # Installation
 
@@ -179,7 +179,7 @@ The Python code in this library may be installed in any number of ways, chose on
     ```
 
 
-<a id="org3690cc6"></a>
+<a id="org9ef74bc"></a>
 
 # Development
 

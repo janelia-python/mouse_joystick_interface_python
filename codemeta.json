@@ -6,7 +6,7 @@
     "dateCreated": "2023-10-17",
     "dateModified": "2023-12-05",
     "name": "mouse_joystick_interface",
-    "version": "5.0.0",
+    "version": "5.0.1",
     "description": "Python interface to the Dudman lab Mouse Joystick Rig.",
     "programmingLanguage": [
         "Python 3"

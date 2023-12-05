@@ -2,7 +2,7 @@
 # This file is generated automatically from metadata
 # File edits may be overwritten!
 
-__version__ = '5.0.0'
+__version__ = '5.0.1'
 __description__ = 'Python interface to the Dudman lab Mouse Joystick Rig.'
 __license__ = 'BSD-3-Clause'
 __url__ = 'https://github.com/janelia-pypi/mouse_joystick_interface_python'

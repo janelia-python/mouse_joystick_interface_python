@@ -60,7 +60,11 @@ metadata: requirements.txt
 
 .PHONY: package
 package:
-	$(GUIX-DEV-CONTAINER) -- sh -c "python3 setup.py sdist bdist_wheel"
+	$(GUIX-DEV-CONTAINER) -- $(VENV-SHELL);\
+	pip install --upgrade build;\
+	python3 -m build;\
+	deactivate;\
+	rm -rf .venv
 
 .PHONY: twine
 twine:
