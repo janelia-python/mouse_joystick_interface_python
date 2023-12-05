@@ -14,7 +14,7 @@
 mouse_joystick_interface
 #+END_SRC
 
-#+NAME: repository-name 
+#+NAME: repository-name
 #+BEGIN_SRC text :exports none :noweb yes
 mouse_joystick_interface_python
 #+END_SRC
@@ -47,8 +47,7 @@ flatten_json
 
 #+NAME: pyproject-dependencies
 #+BEGIN_SRC text :exports none :noweb yes
-"modular_client",
-"flatten_json"
+"modular_client", "flatten_json"
 #+END_SRC
 
 #+NAME: guix-dependencies
@@ -446,7 +445,8 @@ exit
  (gnu packages python-build)
  (gnu packages imagemagick)
  (gnu packages version-control)
- (gnu packages ncurses))
+ (gnu packages ncurses)
+ (guix-janelia packages python-janelia))
 
 (define %source-dir (dirname (dirname (dirname (current-filename)))))
 
@@ -465,7 +465,7 @@ exit
                          emacs
                          emacs-org
                          emacs-ox-gfm
-                         python-hatchling
+                         python-setuptools
                          python-wheel
                          python-twine
                          python-ipython
@@ -530,7 +530,7 @@ GUIX-DEV-SHELL = $(GUIX-TIME-MACHINE) -- shell -D -f $(MAKEFILE_DIR)/guix/guix.s
 CONTAINER = --container --preserve='^DISPLAY$$' --preserve='^TERM$$'
 GUIX-CONTAINER = $(GUIX-SHELL) $(CONTAINER)
 GUIX-DEV-CONTAINER = $(GUIX-DEV-SHELL) $(CONTAINER)
-VENV-SHELL = rm -rf .venv; mkdir .venv; python3 -m venv .venv; source .venv/bin/activate
+VENV-SHELL = rm -rf .venv; mkdir .venv; python3 -m venv .venv; . .venv/bin/activate
 DOCKER-DEV-IMAGE = docker build -f $(MAKEFILE_DIR)/docker/Dockerfile.dev -t <<python-package-name>>-dev .
 DOCKER-DEV-CONTAINER = $(DOCKER-DEV-IMAGE); docker run -it <<python-package-name>>-dev
 DOCKER-IMAGE = $(DOCKER-DEV-IMAGE); docker build -f $(MAKEFILE_DIR)/docker/Dockerfile -t <<python-package-name>> .
@@ -699,14 +699,12 @@ docker-container-port:
 # This file is generated automatically from metadata
 # File edits may be overwritten!
 [build-system]
-requires = ["hatchling"]
-build-backed = "hatchling.build"
-
-[tool.hatch]
-version.path = "src/<<python-package-name>>/__init__.py"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "<<python-package-name>>"
+version = "<<version>>"
 description = "<<description>>"
 readme = "README.md"
 license.file = "<<license-files>>"

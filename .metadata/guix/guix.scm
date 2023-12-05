@@ -13,7 +13,8 @@
  (gnu packages python-build)
  (gnu packages imagemagick)
  (gnu packages version-control)
- (gnu packages ncurses))
+ (gnu packages ncurses)
+ (guix-janelia packages python-janelia))
 
 (define %source-dir (dirname (dirname (dirname (current-filename)))))
 
@@ -32,7 +33,7 @@
                          emacs
                          emacs-org
                          emacs-ox-gfm
-                         python-hatchling
+                         python-setuptools
                          python-wheel
                          python-twine
                          python-ipython

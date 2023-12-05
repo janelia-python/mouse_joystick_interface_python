@@ -1,0 +1,7 @@
+flatten-json==0.1.14
+inflection==0.5.1
+modular-client==8.4.3
+pyserial==3.5
+serial-interface==2.3.1
+six==1.16.0
+sre-yield==1.2

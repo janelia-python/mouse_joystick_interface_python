@@ -1,15 +1,15 @@
-- [About](#orgfe1a224)
-- [Example Usage](#org207e985)
-- [Example Set CSV Input File](#orgffb3df3)
-- [Example Trials CSV Ouput File](#org4b9a21c)
-- [Installation](#orgf1d7739)
-- [Development](#org37bf65c)
+- [About](#orge5ac949)
+- [Example Usage](#orgab5654d)
+- [Example Set CSV Input File](#org3f17bee)
+- [Example Trials CSV Ouput File](#orge872842)
+- [Installation](#orga22e627)
+- [Development](#org3690cc6)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="orgfe1a224"></a>
+<a id="orge5ac949"></a>
 
 # About
 
@@ -18,7 +18,7 @@
 - Description: Python interface to the Dudman lab Mouse Joystick Rig.
 - Version: 5.0.0
 - Python Version: 3.10
-- Release Date: 2023-12-04
+- Release Date: 2023-12-05
 - Creation Date: 2023-10-17
 - License: BSD-3-Clause
 - URL: https://github.com/janelia-pypi/mouse_joystick_interface_python
@@ -28,12 +28,12 @@
 - References:
   - https://github.com/janelia-kicad/mouse_joystick_controller
 - Dependencies:
-  - "modular_client"
-  - "flatten_json"
+  - modular_client
+  - flatten_json
 ```
 
 
-<a id="org207e985"></a>
+<a id="orgab5654d"></a>
 
 # Example Usage
 
@@ -70,7 +70,7 @@ dev.mouse_joystick_controller.abort_trial()
 ## Command Line
 
 
-<a id="orgffb3df3"></a>
+<a id="org3f17bee"></a>
 
 # Example Set CSV Input File
 
@@ -82,7 +82,7 @@ repeat\_trial\_count,pull\_torque,lickport\_reward\_duration,zero\_torque\_rewar
 </p>
 
 
-<a id="org4b9a21c"></a>
+<a id="orge872842"></a>
 
 # Example Trials CSV Ouput File
 
@@ -91,7 +91,7 @@ finished\_trial\_count,successful\_trial\_count,trial\_aborted,assay\_aborted,pu
 </p>
 
 
-<a id="orgf1d7739"></a>
+<a id="orga22e627"></a>
 
 # Installation
 
@@ -179,7 +179,7 @@ The Python code in this library may be installed in any number of ways, chose on
     ```
 
 
-<a id="org37bf65c"></a>
+<a id="org3690cc6"></a>
 
 # Development
 

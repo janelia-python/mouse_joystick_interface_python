@@ -12,7 +12,7 @@ GUIX-DEV-SHELL = $(GUIX-TIME-MACHINE) -- shell -D -f $(MAKEFILE_DIR)/guix/guix.s
 CONTAINER = --container --preserve='^DISPLAY$$' --preserve='^TERM$$'
 GUIX-CONTAINER = $(GUIX-SHELL) $(CONTAINER)
 GUIX-DEV-CONTAINER = $(GUIX-DEV-SHELL) $(CONTAINER)
-VENV-SHELL = rm -rf .venv; mkdir .venv; python3 -m venv .venv; source .venv/bin/activate
+VENV-SHELL = rm -rf .venv; mkdir .venv; python3 -m venv .venv; . .venv/bin/activate
 DOCKER-DEV-IMAGE = docker build -f $(MAKEFILE_DIR)/docker/Dockerfile.dev -t mouse_joystick_interface-dev .
 DOCKER-DEV-CONTAINER = $(DOCKER-DEV-IMAGE); docker run -it mouse_joystick_interface-dev
 DOCKER-IMAGE = $(DOCKER-DEV-IMAGE); docker build -f $(MAKEFILE_DIR)/docker/Dockerfile -t mouse_joystick_interface .
