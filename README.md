@@ -1,15 +1,15 @@
-- [About](#org29e76fc)
-- [Example Usage](#org61c8aa7)
-- [Example Set CSV Input File](#org373a4a1)
-- [Example Trials CSV Ouput File](#org50b63ac)
-- [Installation](#org0c3eee0)
-- [Development](#org9ef74bc)
+- [About](#org111763f)
+- [Example Usage](#org93f5f12)
+- [Example Set CSV Input File](#org716555c)
+- [Example Trials CSV Ouput File](#orgeef9d81)
+- [Installation](#org46e537a)
+- [Development](#org38e2e0b)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org29e76fc"></a>
+<a id="org111763f"></a>
 
 # About
 
@@ -18,7 +18,7 @@
 - Description: Python interface to the Dudman lab Mouse Joystick Rig.
 - Version: 5.0.1
 - Python Version: 3.10
-- Release Date: 2023-12-05
+- Release Date: 2023-12-07
 - Creation Date: 2023-10-17
 - License: BSD-3-Clause
 - URL: https://github.com/janelia-pypi/mouse_joystick_interface_python
@@ -33,27 +33,64 @@
 ```
 
 
-<a id="org61c8aa7"></a>
+<a id="org93f5f12"></a>
 
 # Example Usage
 
 
 ## Python
 
-```python
-from mouse_joystick_interface import MouseJoystickInterface
-dev = MouseJoystickInterface() # Might automatically find devices if available
-# if devices not found automatically, specify ports directly
-dev = MouseJoystickInterface(use_ports=['/dev/ttyACM0','/dev/ttyACM0']) # Linux specific ports
-dev = MouseJoystickInterface(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X specific ports
-dev = MouseJoystickInterface(use_ports=['COM3','COM4']) # Windows specific ports
-# abort_assay prematurely stops a running assay and leaves the rig ready to start a new assay
-dev.abort_assay()
-# start_assay is the main method that starts the assay, collects assay data, and saves data files
-dev.start_assay(set_path='~/set_example.csv')
 
-# optional mouse_joystick_controller methods
-dev.mouse_joystick_controller.set_properties_to_defaults(['ALL'])
+### Operation Systems
+
+1.  All
+
+    ```python
+    from mouse_joystick_interface import MouseJoystickInterface
+    dev = MouseJoystickInterface() # Automatically find device if available
+    # abort_assay prematurely stops a running assay and leaves the rig ready to start a new assay
+    dev.abort_assay()
+    # start_assay is the main method that starts the assay, collects assay data, and saves data files
+    dev.start_assay(set_path='~/set_example.csv')
+    ```
+
+2.  Linux Specific
+
+    ```python
+    from mouse_joystick_interface import MouseJoystickInterface
+    dev = MouseJoystickInterface(use_ports=['/dev/ttyACM0']) # Linux specific port
+    # abort_assay prematurely stops a running assay and leaves the rig ready to start a new assay
+    dev.abort_assay()
+    # start_assay is the main method that starts the assay, collects assay data, and saves data files
+    dev.start_assay(set_path='~/set_example.csv')
+    ```
+
+3.  Windows Specific
+
+    ```python
+    from mouse_joystick_interface import MouseJoystickInterface
+    dev = MouseJoystickInterface(use_ports=['COM3']) # Windows specific port
+    # abort_assay prematurely stops a running assay and leaves the rig ready to start a new assay
+    dev.abort_assay()
+    # start_assay is the main method that starts the assay, collects assay data, and saves data files
+    dev.start_assay(set_path='~/set_example.csv')
+    ```
+
+4.  MacOS Specific
+
+    ```python
+    from mouse_joystick_interface import MouseJoystickInterface
+    dev = MouseJoystickInterface(use_ports=['/dev/tty.usbmodem262471']) # Mac OS X specific port
+    # abort_assay prematurely stops a running assay and leaves the rig ready to start a new assay
+    dev.abort_assay()
+    # start_assay is the main method that starts the assay, collects assay data, and saves data files
+    dev.start_assay(set_path='~/set_example.csv')
+    ```
+
+
+### Optional methods
+
+```python
 dev.mouse_joystick_controller.get_property_values(['ALL'])
 dev.mouse_joystick_controller.repeat_aborted_trial('setValue',False)
 dev.mouse_joystick_controller.get_assay_status()
@@ -67,31 +104,34 @@ dev.mouse_joystick_controller.abort_trial()
 ```
 
 
-## Command Line
+### Before First Use
+
+```python
+dev.mouse_joystick_controller.set_properties_to_defaults(['ALL'])
+```
 
 
-<a id="org373a4a1"></a>
+<a id="org716555c"></a>
 
 # Example Set CSV Input File
 
-<p class="verse">
-repeat\_trial\_count,pull\_torque,lickport\_reward\_duration,zero\_torque\_reward\_delay,reach\_position.0,reach\_position.1<br />
-2,50,100,0,20,200<br />
-3,75,120,0,30,300<br />
-2,0,100,3,5,200<br />
-</p>
+| repeat\_trial\_count | pull\_torque | lickport\_reward\_duration | zero\_torque\_reward\_delay | reach\_position.0 | reach\_position.1 |
+|-------------------- |------------ |-------------------------- |--------------------------- |----------------- |----------------- |
+| 2                    | 50           | 100                        | 0                           | 20                | 200               |
+| 3                    | 75           | 120                        | 0                           | 30                | 300               |
+| 2                    | 0            | 100                        | 3                           | 5                 | 200               |
 
 
-<a id="org50b63ac"></a>
+<a id="orgeef9d81"></a>
 
 # Example Trials CSV Ouput File
 
-<p class="verse">
-finished\_trial\_count,successful\_trial\_count,trial\_aborted,assay\_aborted,pull\_threshold,set\_in\_assay,repeat\_set\_count,block\_in\_set,block\_count,trial\_in\_block,block.repeat\_trial\_count,block.pull\_torque,block.lickport\_reward\_duration,block.zero\_torque\_reward\_delay,block.reach\_position.0,block.reach\_position.1,trial\_start,mouse\_ready,joystick\_ready,pull,push,timeout,trial\_abort<br />
-</p>
+|                       |                         |               |               |                |               |                   |               |             |                 |                           |                   |                                 |                                  |                        |                        |             |             |                |     |     |        |             |
+|---------------------- |------------------------ |-------------- |-------------- |--------------- |-------------- |------------------ |-------------- |------------ |---------------- |-------------------------- |------------------ |-------------------------------- |--------------------------------- |----------------------- |----------------------- |------------ |------------ |--------------- |---- |---- |------- |------------ |
+| finished\_trial\_count | successful\_trial\_count | trial\_aborted | assay\_aborted | pull\_threshold | set\_in\_assay | repeat\_set\_count | block\_in\_set | block\_count | trial\_in\_block | block.repeat\_trial\_count | block.pull\_torque | block.lickport\_reward\_duration | block.zero\_torque\_reward\_delay | block.reach\_position.0 | block.reach\_position.1 | trial\_start | mouse\_ready | joystick\_ready | pull | push | timeout | trial\_abort |
 
 
-<a id="org0c3eee0"></a>
+<a id="org46e537a"></a>
 
 # Installation
 
@@ -179,7 +219,19 @@ The Python code in this library may be installed in any number of ways, chose on
     ```
 
 
-<a id="org9ef74bc"></a>
+## Conda/Spyder
+
+```sh
+conda update conda
+conda create -n mouse_joystick_interface
+conda activate mouse_joystick_interface
+conda install pip
+pip install mouse_joystick_interface
+pip install spyder
+```
+
+
+<a id="org38e2e0b"></a>
 
 # Development
 
