@@ -1,15 +1,15 @@
-- [About](#org111763f)
-- [Example Usage](#org93f5f12)
-- [Example Set CSV Input File](#org716555c)
-- [Example Trials CSV Ouput File](#orgeef9d81)
-- [Installation](#org46e537a)
-- [Development](#org38e2e0b)
+- [About](#org22ec0ea)
+- [Example Usage](#org957541e)
+- [Example Set CSV Input File](#org57e4646)
+- [Example Trials CSV Ouput File](#org83b94a0)
+- [Installation](#orgfa92b9c)
+- [Development](#orgf6d2be8)
 
     <!-- This file is generated automatically from metadata -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org111763f"></a>
+<a id="org22ec0ea"></a>
 
 # About
 
@@ -33,7 +33,7 @@
 ```
 
 
-<a id="org93f5f12"></a>
+<a id="org957541e"></a>
 
 # Example Usage
 
@@ -111,7 +111,7 @@ dev.mouse_joystick_controller.set_properties_to_defaults(['ALL'])
 ```
 
 
-<a id="org716555c"></a>
+<a id="org57e4646"></a>
 
 # Example Set CSV Input File
 
@@ -122,16 +122,16 @@ dev.mouse_joystick_controller.set_properties_to_defaults(['ALL'])
 | 2                    | 0            | 100                        | 3                           | 5                 | 200               |
 
 
-<a id="orgeef9d81"></a>
+<a id="org83b94a0"></a>
 
 # Example Trials CSV Ouput File
 
-|                       |                         |               |               |                |               |                   |               |             |                 |                           |                   |                                 |                                  |                        |                        |             |             |                |     |     |        |             |
-|---------------------- |------------------------ |-------------- |-------------- |--------------- |-------------- |------------------ |-------------- |------------ |---------------- |-------------------------- |------------------ |-------------------------------- |--------------------------------- |----------------------- |----------------------- |------------ |------------ |--------------- |---- |---- |------- |------------ |
 | finished\_trial\_count | successful\_trial\_count | trial\_aborted | assay\_aborted | pull\_threshold | set\_in\_assay | repeat\_set\_count | block\_in\_set | block\_count | trial\_in\_block | block.repeat\_trial\_count | block.pull\_torque | block.lickport\_reward\_duration | block.zero\_torque\_reward\_delay | block.reach\_position.0 | block.reach\_position.1 | trial\_start | mouse\_ready | joystick\_ready | pull | push | timeout | trial\_abort |
+|---------------------- |------------------------ |-------------- |-------------- |--------------- |-------------- |------------------ |-------------- |------------ |---------------- |-------------------------- |------------------ |-------------------------------- |--------------------------------- |----------------------- |----------------------- |------------ |------------ |--------------- |---- |---- |------- |------------ |
+|                        |                          |                |                |                 |                |                    |                |              |                  |                            |                    |                                  |                                   |                         |                         |              |              |                 |      |      |         |              |
 
 
-<a id="org46e537a"></a>
+<a id="orgfa92b9c"></a>
 
 # Installation
 
@@ -231,7 +231,7 @@ pip install spyder
 ```
 
 
-<a id="org38e2e0b"></a>
+<a id="orgf6d2be8"></a>
 
 # Development
 
