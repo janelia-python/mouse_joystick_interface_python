@@ -21,7 +21,7 @@
 - Release Date: 2023-12-07
 - Creation Date: 2023-10-17
 - License: BSD-3-Clause
-- URL: https://github.com/janelia-pypi/mouse_joystick_interface_python
+- URL: https://github.com/janelia-python/mouse_joystick_interface_python
 - Author: Peter Polidoro
 - Email: peter@polidoro.io
 - Copyright: 2023 Howard Hughes Medical Institute
@@ -135,7 +135,7 @@ dev.mouse_joystick_controller.set_properties_to_defaults(['ALL'])
 
 # Installation
 
-<https://github.com/janelia-pypi/python_setup>
+<https://github.com/janelia-python/python_setup>
 
 
 ## GNU/Linux
@@ -239,7 +239,7 @@ pip install spyder
 ## Clone Repository
 
 ```sh
-git clone git@github.com:janelia-pypi/mouse_joystick_interface_python.git
+git clone git@github.com:janelia-python/mouse_joystick_interface_python.git
 cd mouse_joystick_interface_python
 ```
 
